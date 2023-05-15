@@ -1,0 +1,5 @@
+aarch64-linux-gnu-gcc (Ubuntu 12.2.0-14ubuntu2) 12.2.0
+Using built-in specs.
+COLLECT_GCC=aarch64-linux-gnu-gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/12/lto-wrapper
+/
