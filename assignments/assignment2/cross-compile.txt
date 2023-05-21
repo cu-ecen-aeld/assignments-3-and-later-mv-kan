@@ -1,4 +1,14 @@
 aarch64-linux-gnu-gcc (Ubuntu 12.2.0-14ubuntu2) 12.2.0
+
+Using built-in specs.
+COLLECT_GCC=aarch64-linux-gnu-gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/12/lto-wrapper
+Target: aarch64-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Ubuntu 12.2.0-14ubuntu2' --with-bugurl=file:///usr/share/doc/gcc-12/README.Bugs --enable-languages=c,ada,c++,go,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-12 --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --with-sysroot=/ --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-libquadmath --disable-libquadmath-support --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --without-target-system-zlib --enable-multiarch --enable-fix-cortex-a53-843419 --disable-werror --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=aarch64-linux-gnu --program-prefix=aarch64-linux-gnu- --includedir=/usr/aarch64-linux-gnu/include
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 12.2.0 (Ubuntu 12.2.0-14ubuntu2) 
+
 Using built-in specs.
 COLLECT_GCC=aarch64-linux-gnu-gcc
 COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/12/lto-wrapper
