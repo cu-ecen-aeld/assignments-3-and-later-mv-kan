@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo echo "starting manual compilation"
 
 set -e
 set -u
@@ -95,14 +94,15 @@ sudo mknod -m 600 dev/console c 5 1
 ln -sf dev/null dev/tty2
 
 # Add dependencies
-LIBS=$(aarch64-linux-gnu-readelf -a bin/busybox |grep "NEEDED"| grep -o -P '(?<=\[)[^\]]+(?=\])')
+LIBS=$(${CROSS_COMPILE}readelf -a bin/busybox |grep "NEEDED"| grep -o -P '(?<=\[)[^\]]+(?=\])')
 # Iterate over the library names
 while IFS= read -r library; do
   # Use locate to find the library path
   library_path=$(locate -r "$library")
 
   # Find the line with "aarch64-linux-gnu" in the path
-  target_line=$(echo "$library_path" | grep -m 1 "aarch64-linux-gnu")
+  echo "available paths ${library_path}"
+  target_line=$(echo "$library_path" | grep -m 1 "aarch64-none-linux-gnu")
 
   # Copy the library to the desired location
   output_lib="${OUTDIR}/rootfs/lib/${library}"
@@ -111,7 +111,6 @@ while IFS= read -r library; do
     cp "$target_line" "${OUTDIR}/rootfs/lib/${library}"
   fi 
 done <<< "$LIBS"
-exit 1
 # TODO: Clean and build the writer utility
 
 cd ${FINDER_APP_DIR}
@@ -122,16 +121,18 @@ make CROSS_COMPILE=${CROSS_COMPILE}
 # on the target rootfs
 
 cd ${OUTDIR}/rootfs/home
+mkdir conf
 cp ${FINDER_APP_DIR}/writer .
 cp "${FINDER_APP_DIR}/finder.sh" .
 cp ${FINDER_APP_DIR}/finder-test.sh .
-cp ${FINDER_APP_DIR}/conf/username.txt .
+cp ${FINDER_APP_DIR}/conf/username.txt conf
+cp ${FINDER_APP_DIR}/conf/assignment.txt conf
 cp ${FINDER_APP_DIR}/autorun-qemu.sh .
 
 # TODO: Chown the root directory
 
 cd ${OUTDIR}/rootfs
-sudo chown -R root:root *
+# sudo chown -R root:root *
 
 # TODO: Create initramfs.cpio.gz
 
