@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sudo apt install plocate -y 
 set -e
 set -u
 
