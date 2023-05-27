@@ -1,5 +1,6 @@
 #!/bin/bash
-sudo apt install plocate -y 
+# sudo apt install plocate -y 
+sudo apt install mlocate -y
 set -e
 set -u
 
