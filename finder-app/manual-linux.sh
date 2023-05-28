@@ -10,7 +10,7 @@ KERNEL_VERSION=v5.15
 BUSYBOX_VERSION=1_33_1
 FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
-CROSS_COMPILE=aarch64-none-linux-gnu-
+CROSS_COMPILE=aarch64-linux-gnu-
 
 if [ $# -lt 1 ]
 then
@@ -108,10 +108,13 @@ while IFS= read -r library; do
   target_line=$(echo "$library_path" | grep -m 1 "${CROSS_COMPILE%?}")
   # Copy the library to the desired location
   output_lib="${OUTDIR}/rootfs/lib/$(basename "$library")"
+  output_lib64="${OUTDIR}/rootfs/lib64/$(basename "$library")"
   if [ ! -f "${OUTDIR}/rootfs/lib/${library}" ] 
   then
     cp "$target_line" "$output_lib"
+    cp "$target_line" "$output_lib64"
     echo "copy $target_line into $output_lib"
+    echo "copy $target_line into $output_lib64"
   fi 
 done <<< "$LIBS"
 # TODO: Clean and build the writer utility
