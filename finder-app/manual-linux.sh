@@ -96,6 +96,7 @@ ln -sf dev/null dev/tty2
 
 # Add dependencies
 LIBS=$(${CROSS_COMPILE}readelf -a bin/busybox |grep "NEEDED"| grep -o -P '(?<=\[)[^\]]+(?=\])')
+echo "Needed paths $LIBS"
 # Iterate over the library names
 while IFS= read -r library; do
   # Use locate to find the library path
@@ -103,13 +104,13 @@ while IFS= read -r library; do
 
   # Find the line with "aarch64-linux-gnu" in the path
   echo "available paths ${library_path}"
-  target_line=$(echo "$library_path" | grep -m 1 "aarch64-none-linux-gnu")
-
+  target_line=$(echo "$library_path" | grep -m 1 "${CROSS_COMPILE%?}")
   # Copy the library to the desired location
   output_lib="${OUTDIR}/rootfs/lib/${library}"
   if [ ! -f "${OUTDIR}/rootfs/lib/${library}" ] 
   then
     cp "$target_line" "${OUTDIR}/rootfs/lib/${library}"
+    echo  "copy $target_line into $output_lib"
   fi 
 done <<< "$LIBS"
 # TODO: Clean and build the writer utility
