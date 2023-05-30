@@ -20,4 +20,4 @@ for f in "$FILESDIR"/*; do
     LINES_MATCHES=$(($(grep -c $SEARCHSTR $f) + $LINES_MATCHES))
 done 
 
-echo "The number of files are $FILES_MATCHES and the number of matching lines are $LINES_MATCHES"
+echo "The number of files are $FILES_MATCHES and the number of matching lines are $LINES_MATCHES" > /tmp/assignment4-result.txt
