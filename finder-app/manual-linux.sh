@@ -127,13 +127,13 @@ make CROSS_COMPILE=${CROSS_COMPILE}
 # on the target rootfs
 
 cd ${OUTDIR}/rootfs/home
-mkdir conf
-cp ${FINDER_APP_DIR}/writer .
-cp "${FINDER_APP_DIR}/finder.sh" .
-cp ${FINDER_APP_DIR}/finder-test.sh .
-cp ${FINDER_APP_DIR}/conf/username.txt conf
-cp ${FINDER_APP_DIR}/conf/assignment.txt conf
-cp ${FINDER_APP_DIR}/autorun-qemu.sh .
+# mkdir conf
+# cp ${FINDER_APP_DIR}/writer .
+# cp "${FINDER_APP_DIR}/finder.sh" .
+# cp ${FINDER_APP_DIR}/finder-test.sh .
+# cp ${FINDER_APP_DIR}/conf/username.txt conf
+# cp ${FINDER_APP_DIR}/conf/assignment.txt conf
+# cp ${FINDER_APP_DIR}/autorun-qemu.sh .
 
 # TODO: Chown the root directory
 
