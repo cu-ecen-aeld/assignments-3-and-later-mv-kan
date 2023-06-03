@@ -1,7 +1,7 @@
 #!/bin/sh
 # Tester script for assignment 1 and assignment 2
 # Author: Siddhant Jajoo
-
+cd $(dirname $0)
 set -e
 set -u
 
