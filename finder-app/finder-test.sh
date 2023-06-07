@@ -1,7 +1,7 @@
 #!/bin/sh
 # Tester script for assignment 1 and assignment 2
 # Author: Siddhant Jajoo
-
+cd $(dirname $0)
 set -e
 set -u
 
@@ -54,10 +54,10 @@ fi
 
 for i in $( seq 1 $NUMFILES)
 do
-	writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+	./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
-OUTPUTSTRING=$(finder.sh "$WRITEDIR" "$WRITESTR")
+OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
 
 # remove temporary directories
 rm -rf /tmp/aeld-data
