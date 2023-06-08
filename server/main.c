@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <syslog.h>
 #include <signal.h>
+#include <poll.h>
 
 #define THEPORT "9000"
 #define BUF_SIZE 1024
@@ -42,7 +43,7 @@ int sock_to_peer(int sockfd, char *buf, size_t buf_size)
 
 // returns socket fd or -1 on error 
 int get_listening_socket(char*port) {
-    struct addrinfo hints, *res;
+    struct addrinfo hints, *res, *p;
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
@@ -56,10 +57,29 @@ int get_listening_socket(char*port) {
         // syslog(LOG_ERR, gai_strerror(status));
         return -1;
     }
-    int sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    int sockfd;
+    int yes = 1; // For setsockopt() SO_REUSEADDR, below
+    for (p = res; p != NULL; p = p->ai_next)
+    {
+        sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (sockfd < 0)
+        {
+            continue;
+        }
+
+        // Lose the pesky "address already in use" error message
+        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+
+        break;
+    }
     if (sockfd == -1)
     {
         perror("socket()");
+        return -1;
+    }
+    // If we got here, it means we didn't get bound
+    if (p == NULL)
+    {
         return -1;
     }
     syslog(LOG_DEBUG, "socket() ok");
@@ -148,6 +168,7 @@ int handle_client_connection(int clientfd) {
         if (bytesRead == -1)
         {
             perror("recv failed");
+            fclose(file);
             return -1;
         }
         fwrite(buf, 1, bytesRead, file);
@@ -183,24 +204,51 @@ int run() {
         return -1;
     }
 
+    // first - listener 
+    // second - client handler 
+    struct pollfd pfds[2];
+
+    pfds[0].fd = server_socket;
+    pfds[0].events = POLLIN;
+    int fd_count = 1;
     while (1)
     {
-        int clientfd = accept_connection(server_socket);
-        if (clientfd == -1)
-        {
-            fprintf(stderr, " accept_connection() failed\n");
+        int poll_count = poll(pfds, fd_count, -1);
+        if (poll_count == -1) {
+            perror("poll()");
             return -1;
         }
+        for (int i = 0; i < fd_count; i++)
+        {
+            if (pfds[i].revents & POLLIN) {
+                if (pfds[i].fd == server_socket) { // listener
+                    int clientfd = accept_connection(server_socket);
+                    if (clientfd == -1) {
+                        perror("accept");
+                    } else {
+                        
+                    }
+                } else { // regular client
+                    status = handle_client_connection(pfds[i].fd);
+                }
+            }
+        }
+            // int clientfd = accept_connection(server_socket);
+            // if (clientfd == -1)
+            // {
+            //     fprintf(stderr, " accept_connection() failed\n");
+            //     return -1;
+            // }
 
-        if (!graceful_stop)
-            status = handle_client_connection(clientfd);
-        
-        if (status != 0)
-        {
-            fprintf(stderr, "handle_client_connection, status = %d\n", status);
-            return -1;
+            // if (!graceful_stop)
+            //     status = handle_client_connection(clientfd);
+
+            // if (status != 0)
+            // {
+            //     fprintf(stderr, "handle_client_connection, status = %d\n", status);
+            //     return -1;
+            // }
         }
-    }
 
     closelog();
     // Close the socket
@@ -212,16 +260,26 @@ int run() {
     return 0;
 }
 
+void cleanup() {
+    close(server_socket);
+    remove(VARTMPFILE);
+    graceful_stop = 1;
+}
+
 // Signal handler function
 void signal_handler(int sig)
 {
     if (sig == SIGINT || sig == SIGTERM)
     {
-        close(server_socket);
+        graceful_stop = 1;
     }
 }
 
 int main()
 {
+    printf("pids: %ld %ld\n", (long)getpid(), (long)getppid());
+    // Register signal handlers
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
     return run();
 }
